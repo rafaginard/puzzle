@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+
+<canvas id="myCanvas" width="400" height="400"
+style="border:1px solid #000000;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+
+<button type="button" onclick="Set_Image(Homer)"><img id="Homer" src="http://24.media.tumblr.com/tumblr_m53xz1ND6w1r5g3yto1_500.jpg" width="220" height="277"></button>
+<button type="button" onclick="Set_Image(GOT)"><img id="GOT" src="https://k60.kn3.net/taringa/E/E/4/7/2/6/aadamm/56B.jpg" width="220" height="277"></button>
+
+<script>
+  function Set_Image(img){
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+
+    ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+    ctx.drawImage(img, 0, 0, myCanvas.width, myCanvas.height);  // destination rectangle
+    console.log("Hola");
+  };
+</script>
+
+</body>
+</html>
