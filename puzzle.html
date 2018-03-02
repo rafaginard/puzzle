@@ -3,23 +3,99 @@
 <body>
 
 
-<canvas id="myCanvas" width="400" height="400"
+<canvas id="myCanvas" width="200" height="200"
 style="border:1px solid #000000;">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
 
-<button type="button" onclick="Set_Image(Homer)"><img id="Homer" src="http://24.media.tumblr.com/tumblr_m53xz1ND6w1r5g3yto1_500.jpg" width="220" height="277"></button>
-<button type="button" onclick="Set_Image(GOT)"><img id="GOT" src="https://k60.kn3.net/taringa/E/E/4/7/2/6/aadamm/56B.jpg" width="220" height="277"></button>
+<button type="button" onclick="init(Coche)"><img id="Coche" src="http://auto.ferrari.com/en_EN/wp-content/uploads/sites/5/2014/03/LaFerrari.jpg" width="200" height="200"></button>
+<button type="button" onclick="init(Seta)"><img id="Seta" src="http://orig11.deviantart.net/881e/f/2009/173/8/1/bioshroom_200x200_by_nintenzone.png" width="200" height="200"></button>
+<button type="button" onclick="init(Chrome)"><img id="Chrome" src="http://tech21info.com/admin/wp-content/uploads/2013/03/chrome-logo-200x200.png" width="200" height="200"></button>
 
 <script>
-  function Set_Image(img){
-    var c = document.getElementById("myCanvas");
-    var ctx = c.getContext("2d");
+  const TOTAL_PIECES = 3;
+  var _canvas;
+  var _stage;
 
-    ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-    ctx.drawImage(img, 0, 0, myCanvas.width, myCanvas.height);  // destination rectangle
-    console.log("Hola");
-  };
+  var _img;
+  var _pieces;
+  var _puzzleWidth;
+  var _puzzleHeight;
+  var _pieceWidth;
+  var _pieceHeight;
+  var _currentPiece;
+  var _currentDropPiece;
+
+  function init(imagen){
+    _img = imagen;
+    document.onmousedown = initPuzzle(_img);
+  }
+
+  function onImage(){
+    _pieceWidth = Math.ceil(_img.width / TOTAL_PIECES);
+    _pieceHeight = Math.ceil(_img.height / TOTAL_PIECES);
+    _puzzleWidth = _pieceWidth * TOTAL_PIECES;
+    _puzzleHeight = _pieceHeight * TOTAL_PIECES;
+    setCanvas();
+  }
+
+  function setCanvas(){
+    _canvas = document.getElementById("myCanvas");
+    _stage = _canvas.getContext("2d");
+    _canvas.width = _puzzleWidth;
+    _canvas.height = _puzzleHeight;
+    _stage.clearRect(0, 0, _canvas.width, _canvas.height);
+  }
+
+  function initPuzzle(img){
+
+    _pieces = [];
+    _mouse = {x:0,y:0};
+    _currentPiece = null;
+    _currentDropPiece = null;
+    var xPos = 0;
+    var yPos = 0;
+    onImage();
+    buildPieces();
+    _stage.clearRect(0, 0, _canvas.width, _canvas.height);
+    //Paint_Puzzle();
+    for(i = 0;i < TOTAL_PIECES * TOTAL_PIECES; i++){
+      _piece = _pieces[i];
+      _piece.xpos = xPos;
+      _piece.ypos = yPos;
+      _stage.drawImage(_img, _piece.sx,_piece.sy , _pieceWidth, _pieceHeight, xPos, yPos, _puzzleWidth/3,_puzzleHeight/3);
+      _stage.strokeRect(xPos, yPos, _pieceWidth, _pieceHeight);
+
+      xPos += _pieceWidth;
+      if(xPos >= _puzzleWidth){
+        xPos = 0;
+        yPos += _pieceHeight;
+      }
+    }
+    //_stage.drawImage(_img, 0, 0, _puzzleWidth, _puzzleHeight, 0, 0, _puzzleWidth, _puzzleHeight);
+    //createTitle("Click to Start");
+  }
+
+  function buildPieces(){
+    var i;
+    var piece;
+    var xPos = 0;
+    var yPos = 0;
+
+    for(i = 0;i < TOTAL_PIECES * TOTAL_PIECES;i++){
+      piece = {};
+      piece.sx = xPos;
+      piece.sy = yPos;
+      _pieces.push(piece);
+      xPos += _pieceWidth;
+      if(xPos >= _puzzleWidth){
+          xPos = 0;
+          yPos += _pieceHeight;
+      }
+    }
+    //document.onmousedown = shufflePuzzle;
+  }
+
 </script>
 
 </body>
