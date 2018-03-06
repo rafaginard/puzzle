@@ -28,7 +28,8 @@ Your browser does not support the HTML5 canvas tag.
 
   function init(imagen){
     _img = imagen;
-    document.onmousedown = initPuzzle(_img);
+    initPuzzle(_img);
+    _canvas.onmousedown=function(ev){movePiece();};
   }
 
   function onImage(){
@@ -49,7 +50,24 @@ Your browser does not support the HTML5 canvas tag.
 
   }
 
+  function getCoordenates(){
+    var x = event.clientX;
+    var y = event.clientY;
+    return [x,y];
+  }
+
   function initPuzzle(img){
+
+    //_stage.clearRect(0, 0, _canvas.width, _canvas.height);
+    //console.log(xPos, yPos, _pieceWidth, _pieceHeight);
+    //blanckSpace();
+    drawPuzzle();
+    blanckSpace();
+    console.log(_pieces);
+
+  }
+
+  function drawPuzzle(){
 
     _pieces = [];
     _mouse = {x:0,y:0};
@@ -74,11 +92,6 @@ Your browser does not support the HTML5 canvas tag.
         yPos += _pieceHeight;
       }
     }
-    //_stage.clearRect(0, 0, _canvas.width, _canvas.height);
-    console.log(_pieces);
-    blanckSpace();
-    //_stage.drawImage(_img, 67, 67, _pieceWidth, _pieceHeight, 67, 67, _puzzleWidth/3, _puzzleHeight/3);
-    //createTitle("Click to Start");
   }
 
   function buildPieces(){
@@ -91,6 +104,7 @@ Your browser does not support the HTML5 canvas tag.
       piece = {};
       piece.sx = xPos;
       piece.sy = yPos;
+      piece.blank = false;
       _pieces.push(piece);
       xPos += _pieceWidth;
       if(xPos >= _puzzleWidth){
@@ -102,15 +116,45 @@ Your browser does not support the HTML5 canvas tag.
   }
 
   function blanckSpace(){
-    var xPos = 134;
-    var yPos = 67;
+    blank_piece = _pieces[8]
+    blank_piece.blank = true;
     _stage.fillStyle="Blue";
-    _stage.fillRect(134,134,xPos,yPos);
+    _stage.fillRect(blank_piece.xpos, blank_piece.ypos,_pieceWidth, _pieceHeight);
   }
 
   function shufflePuzzle(o){
     for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
+  }
+
+  function movePiece(x,y){
+    //console.log(getCoordenates());
+    coords = getCoordenates()
+    if (coords[0] <= 67 && coords[1] <= 67){
+      console.log("Pieza 1");
+    }else if (coords[0] <= 134 && coords[1] <= 67 && coords[0] >= 67){
+        console.log("Pieza 2");
+    }else if (coords[0] >= 134 && coords[1] <= 67){
+        console.log("Pieza 3");
+    }else if (coords[0] <= 67 && coords[1] <= 134 && coords[1] >= 67){
+        console.log("Pieza 4");
+    }else if (coords[0] <= 67 && coords[1] >= 134){
+        console.log("Pieza 7");
+    }else if (coords[0] <= 134 && coords[1] <= 134 && coords[0] >= 67 && coords[1] >= 67){
+        console.log("Pieza 5");
+    }else if (coords[0] >= 134 && coords[1] <= 134&& coords[1] >= 67){
+        console.log("Pieza 6");
+    }else if (coords[0] >= 67 && coords[1] >= 134 && coords[0] <= 134){
+        console.log("Pieza 8");
+    }else if (coords[0] >= 134 && coords[1] >= 134){
+        console.log("Pieza 9");
+    }
+
+
+
+
+
+    //checkBlank();
   }
 
 </script>
