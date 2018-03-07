@@ -27,12 +27,14 @@ Your browser does not support the HTML5 canvas tag.
   var _currentDropPiece;
 
   function init(imagen){
+    
     _img = imagen;
     initPuzzle(_img);
     _canvas.onmousedown=function(ev){movePiece();};
   }
 
   function onImage(){
+
     _pieceWidth = Math.ceil(_img.width / TOTAL_PIECES);
     _pieceHeight = Math.ceil(_img.height / TOTAL_PIECES);
     _puzzleWidth = _pieceWidth * TOTAL_PIECES;
@@ -41,13 +43,13 @@ Your browser does not support the HTML5 canvas tag.
   }
 
   function setCanvas(){
+
     _canvas = document.getElementById("myCanvas");
     _stage = _canvas.getContext("2d");
     _canvas.width = _puzzleWidth;
     _canvas.height = _puzzleHeight;
     _stage.clearRect(0, 0, _canvas.width, _canvas.height);
     _stage.drawImage(_img, 0, 0, _puzzleWidth, _puzzleHeight, 0, 0, _puzzleWidth, _puzzleHeight);
-
   }
 
   function getCoordenates(){
@@ -58,34 +60,39 @@ Your browser does not support the HTML5 canvas tag.
 
   function initPuzzle(img){
 
-    //_stage.clearRect(0, 0, _canvas.width, _canvas.height);
-    //console.log(xPos, yPos, _pieceWidth, _pieceHeight);
-    //blanckSpace();
-    drawPuzzle();
-    blanckSpace();
-    console.log(_pieces);
-
+    setPuzzle();
   }
 
-  function drawPuzzle(){
+  function setPuzzle(){
 
     _pieces = [];
     _mouse = {x:0,y:0};
     _currentPiece = null;
     _currentDropPiece = null;
-    var xPos = 0;
-    var yPos = 0;
+
     onImage();
     buildPieces();
     _stage.clearRect(0, 0, _canvas.width, _canvas.height);
-    //Paint_Puzzle();
+    blanckSpace();
+    drawPuzzle();
+  }
+
+  function drawPuzzle(){
+    var xPos = 0;
+    var yPos = 0;
+    _stage.clearRect(0, 0, _canvas.width, _canvas.height);
     for(i = 0;i < TOTAL_PIECES * TOTAL_PIECES; i++){
       _piece = _pieces[i];
       _piece.xpos = xPos;
       _piece.ypos = yPos;
-      _stage.drawImage(_img, _piece.sx,_piece.sy , _pieceWidth, _pieceHeight, xPos, yPos, _puzzleWidth/3,_puzzleHeight/3);
-      _stage.strokeRect(xPos, yPos, _pieceWidth, _pieceHeight);
+      if (!_pieces[i].blank){
+          _stage.drawImage(_img, _piece.sx,_piece.sy , _pieceWidth, _pieceHeight, xPos, yPos, _puzzleWidth/3,_puzzleHeight/3);
+          _stage.strokeRect(xPos, yPos, _pieceWidth, _pieceHeight);
+      }else{
+          _stage.fillStyle="Blue";
+          _stage.fillRect(xPos, yPos,_pieceWidth, _pieceHeight);
 
+      }
       xPos += _pieceWidth;
       if(xPos >= _puzzleWidth){
         xPos = 0;
@@ -102,6 +109,7 @@ Your browser does not support the HTML5 canvas tag.
 
     for(i = 0;i < TOTAL_PIECES * TOTAL_PIECES;i++){
       piece = {};
+      piece.Id = i;
       piece.sx = xPos;
       piece.sy = yPos;
       piece.blank = false;
@@ -116,10 +124,8 @@ Your browser does not support the HTML5 canvas tag.
   }
 
   function blanckSpace(){
-    blank_piece = _pieces[8]
-    blank_piece.blank = true;
-    _stage.fillStyle="Blue";
-    _stage.fillRect(blank_piece.xpos, blank_piece.ypos,_pieceWidth, _pieceHeight);
+
+    _pieces[8].blank = true;
   }
 
   function shufflePuzzle(o){
@@ -127,34 +133,79 @@ Your browser does not support the HTML5 canvas tag.
     return o;
   }
 
+  function checkBlank(pos){
+    allowToMove = false;
+    position = 0;
+
+    if(pos-1 >= 0){
+      if(_pieces[pos-1].blank == true){
+        allowToMove = true;
+        position = pos - 1;
+      }
+    }
+    if(pos+1 < 9){
+      if(_pieces[pos+1].blank == true){
+        allowToMove = true;
+        position = pos + 1;
+      }
+    }
+    if(pos-3 >= 0){
+      if(_pieces[pos-3].blank == true){
+        allowToMove = true;
+        position = pos - 3;
+      }
+    }
+    if(pos+3 < 9){
+      if(_pieces[pos+3].blank == true){
+        allowToMove = true;
+        position = pos + 3;
+      }
+    }
+    return {allowToMove,
+            position};
+  }
+
+  function changePosition(move, pos){
+    var pieceChange = [];
+
+    pieceChange = _pieces[pos];
+    _pieces[pos] = _pieces[move.position];
+    _pieces[move.position] = pieceChange;
+    console.log(_pieces[move.position], _pieces[pos]);
+
+  }
+
   function movePiece(x,y){
-    //console.log(getCoordenates());
-    coords = getCoordenates()
-    if (coords[0] <= 67 && coords[1] <= 67){
-      console.log("Pieza 1");
-    }else if (coords[0] <= 134 && coords[1] <= 67 && coords[0] >= 67){
-        console.log("Pieza 2");
-    }else if (coords[0] >= 134 && coords[1] <= 67){
-        console.log("Pieza 3");
-    }else if (coords[0] <= 67 && coords[1] <= 134 && coords[1] >= 67){
-        console.log("Pieza 4");
-    }else if (coords[0] <= 67 && coords[1] >= 134){
-        console.log("Pieza 7");
-    }else if (coords[0] <= 134 && coords[1] <= 134 && coords[0] >= 67 && coords[1] >= 67){
-        console.log("Pieza 5");
-    }else if (coords[0] >= 134 && coords[1] <= 134&& coords[1] >= 67){
-        console.log("Pieza 6");
-    }else if (coords[0] >= 67 && coords[1] >= 134 && coords[0] <= 134){
-        console.log("Pieza 8");
-    }else if (coords[0] >= 134 && coords[1] >= 134){
-        console.log("Pieza 9");
+
+    var coords = getCoordenates()
+    var width = _pieceWidth; //67
+    var height = _pieceHeight; //67
+
+    if (coords[0] <= width && coords[1] <= height){
+        pos = 0;
+    }else if (coords[0] <= width*2 && coords[1] <= height && coords[0] >= width){
+        pos = 1;
+    }else if (coords[0] >= width*2 && coords[1] <= height){
+        pos = 2;
+    }else if (coords[0] <= width && coords[1] <= height*2 && coords[1] >= height){
+        pos = 3;
+    }else if (coords[0] <= width && coords[1] >= height*2){
+        pos = 6;
+    }else if (coords[0] <= width*2 && coords[1] <= height*2 && coords[0] >= width && coords[1] >= height){
+        pos = 4;
+    }else if (coords[0] >= width*2 && coords[1] <= height*2 && coords[1] >= height){
+        pos = 5;
+    }else if (coords[0] >= width && coords[1] >= height*2 && coords[0] <= width*2){
+        pos = 7;
+    }else if (coords[0] >= width*2 && coords[1] >= height*2){
+        pos = 8;;
     }
 
-
-
-
-
-    //checkBlank();
+    move = checkBlank(pos);
+    if (move.allowToMove){
+      changePosition(move, pos);
+      drawPuzzle();
+    }
   }
 
 </script>
